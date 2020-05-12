@@ -6,7 +6,7 @@
             <form enctype="multipart/form-data" method="POST">
                 {% csrf_token %}
             <div class="row justify-content-center">
-                <select class="selectpicker form-control" data-width="70%" data-live-search="true" id="crime">
+                <select class="selectpicker form-control" data-width="65%" data-live-search="true" id="crime" name="crime" title="Преступление">
                 {% for type,crimes in type_to_crimes.items %}
                 <optgroup label="{{ type }}">
                   {% for crime in crimes %}
@@ -15,9 +15,9 @@
                 </optgroup>
                 {% endfor %}
                 </select>
-                <select class="selectpicker form-control" data-live-search="true" data-width="20%" id="year">
+                <select class="selectpicker form-control" data-live-search="true" data-width="25%" id="year" name="year" title="Год">
                   {% for year in years %}
-                      <option value={{ year.crime_doc_id }}>{{ year.year }}</option>
+                      <option parent={{ year.crime_doc_id }} value="{{ year.year }}">{{ year.year }}</option>
                   {% endfor %}
                 </select>
             </div>
@@ -32,7 +32,7 @@
                     $select2 = $( '#year' ),
                     $options = $select2.find( 'option' );
                 $select1.on( 'change', function() {
-                    $select2.html( $options.filter( '[value="' + this.value + '"]' ) );
+                    $select2.html( $options.filter( '[parent="' + this.value + '"]' ) );
                     $select2.selectpicker('refresh')
                 } ).trigger( 'change' );
             </script>

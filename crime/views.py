@@ -7,7 +7,7 @@ from django.urls import reverse
 import requests
 import json
 from crime.models import CrimeDoc, CountryNames, Crimes, CountryDoc, Indicator_Doc, Indicators,CrimeType
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class UserRegistrationView(View):
     form_class = UserForm
@@ -124,8 +124,15 @@ class MainPage(View):
         years = Crimes.objects.values('crime_doc_id','year').distinct().order_by('crime_doc_id','-year')
         return render(request, 'index.html', {'type_to_crimes': type_to_crimes, 'years': years})
 
+    def post(self,request):
+        crime_ids = request.POST.getlist('crime')
+        years=request.POST.getlist('year')
+        print(crime_ids, years)
+        return HttpResponseRedirect(reverse('index'))
 
-class OneCountry(View):
+
+class OneCountry(LoginRequiredMixin,View):
+    login_url = '/userlogin/'
 
     def get(self, request):
         countries = CountryDoc.objects.filter(crimes__crime_doc_id__isnull=False).values().distinct()
@@ -135,8 +142,16 @@ class OneCountry(View):
             type_to_crimes[type['rus_name']] = CrimeDoc.objects.filter(type_id=type['id']).values('id','rus_name','crimes__country_doc_id').distinct()
         return render(request,'onecountry.html',{'countries':countries,'type_to_crimes':type_to_crimes})
 
+    def post(self, request):
+        country_id = request.POST.get('country')
+        crime_ids = request.POST.getlist('crime')
+        print(country_id,crime_ids)
+        return HttpResponseRedirect(reverse('index'))
 
-class CompareCountries(View):
+
+
+class CompareCountries(LoginRequiredMixin, View):
+    login_url = '/userlogin/'
 
     def get(self, request):
         type_to_crimes = {}
@@ -146,4 +161,9 @@ class CompareCountries(View):
         countries = CountryDoc.objects.filter(crimes__crime_doc_id__isnull=False).values('id','rus_name','crimes__crime_doc_id').distinct()
         return render(request,'compare.html',{'type_to_crimes':type_to_crimes,'countries':countries})
 
+    def post(self, request):
+        crime_id = request.POST.get('crime')
+        countries_id = request.POST.getlist('country')
+        print(crime_id,countries_id)
+        return HttpResponseRedirect(reverse('index'))
 
