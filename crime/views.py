@@ -114,7 +114,8 @@ class Update(View):
         return HttpResponseRedirect(reverse('index'))
 
 
-class MainPage(View):
+class World(LoginRequiredMixin,View):
+    login_url = '/userlogin/'
 
     def get(self, request):
         type_to_crimes = {}
@@ -122,7 +123,7 @@ class MainPage(View):
         for type in types:
             type_to_crimes[type['rus_name']]=CrimeDoc.objects.filter(type_id=type['id'])
         years = Crimes.objects.values('crime_doc_id','year').distinct().order_by('crime_doc_id','-year')
-        return render(request, 'index.html', {'type_to_crimes': type_to_crimes, 'years': years})
+        return render(request, 'world.html', {'type_to_crimes': type_to_crimes, 'years': years})
 
     def post(self,request):
         crime_ids = request.POST.getlist('crime')
@@ -166,4 +167,10 @@ class CompareCountries(LoginRequiredMixin, View):
         countries_id = request.POST.getlist('country')
         print(crime_id,countries_id)
         return HttpResponseRedirect(reverse('index'))
+
+
+class Map(View):
+
+    def get(self, request):
+        return render(request, 'fig.html')
 

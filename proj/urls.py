@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from crime.views import MainPage
+from crime.views import IndexView
 from django.conf.urls import url, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^$', MainPage.as_view(), name='index'),
+    url(r'^$', IndexView.as_view(), name='index'),
     url(r'^', include('crime.urls'))
 ]

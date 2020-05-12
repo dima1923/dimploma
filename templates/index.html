@@ -3,42 +3,13 @@
 <div class="container">
   <div class="jumbotron jumbotron-fluid">
         {% if user.is_authenticated %}
-            <form enctype="multipart/form-data" method="POST">
-                {% csrf_token %}
-            <div class="row justify-content-center">
-                <select class="selectpicker form-control" data-width="65%" data-live-search="true" id="crime" name="crime" title="Преступление">
-                {% for type,crimes in type_to_crimes.items %}
-                <optgroup label="{{ type }}">
-                  {% for crime in crimes %}
-                      <option value={{ crime.id }}>{{ crime.rus_name|capfirst }}</option>
-                  {% endfor %}
-                </optgroup>
-                {% endfor %}
-                </select>
-                <select class="selectpicker form-control" data-live-search="true" data-width="25%" id="year" name="year" title="Год">
-                  {% for year in years %}
-                      <option parent={{ year.crime_doc_id }} value="{{ year.year }}">{{ year.year }}</option>
-                  {% endfor %}
-                </select>
-            </div>
-            <div class="mt-3">
-                <div class="row justify-content-center">
-                    <input class="btn btn-primary" type="submit" value="Построить карту и анализ">
-                </div>
-            </div>
-            </form>
-            <script>
-                var $select1 = $( '#crime' ),
-                    $select2 = $( '#year' ),
-                    $options = $select2.find( 'option' );
-                $select1.on( 'change', function() {
-                    $select2.html( $options.filter( '[parent="' + this.value + '"]' ) );
-                    $select2.selectpicker('refresh')
-                } ).trigger( 'change' );
-            </script>
+            <h1 class="text-center display-4">Добро пожаловать</h1>
         {% else %}
             <h1 class="text-center display-4">Зарегистируйтесь или войдите</h1>
         {% endif %}
   </div>
 </div>
+    <script>
+        $( 'nav.navbar #nav1' ).addClass('active')
+    </script>
 {% endblock %}

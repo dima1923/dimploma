@@ -20,30 +20,33 @@
       <div class="collapse navbar-collapse" id="navbarText">
           <ul class="navbar-nav mr-auto">
               <li class="nav-item">
-                  <a class="nav-link"  href="{% url 'index' %}">Главная</a>
+                  <a class="nav-link"  href="{% url 'index' %}"  id="nav1">Главная</a>
               </li>
               {% if user.is_authenticated %}
                   {% if user.is_staff %}
                       <li class="nav-item">
-                          <a class="nav-link" href="{% url 'crime:update' %}">Обновить</a>
+                          <a class="nav-link" href="{% url 'crime:update' %}" id="nav2">Обновить</a>
                       </li>
                   {% endif %}
                   <li class="nav-item">
-                      <a class="nav-link" href="{% url 'crime:onecountry' %}">Страны</a>
+                      <a class="nav-link" href="{% url 'crime:world' %}" id="nav8">Мир</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" href="{% url 'crime:compare' %}">Сравнить</a>
+                      <a class="nav-link" href="{% url 'crime:onecountry' %}" id="nav3">Страны</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" href="{% url 'crime:logout' %}">Выйти</a>
+                      <a class="nav-link" href="{% url 'crime:compare' %}" id="nav4">Сравнить</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'crime:logout' %}" id="nav5">Выйти</a>
                   </li>
 
               {% else %}
                   <li class="nav-item">
-                      <a class="nav-link" href="{% url 'crime:register' %}">Регистрация</a>
+                      <a class="nav-link" href="{% url 'crime:register' %}" id="nav6">Регистрация</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" href="{% url 'crime:userlogin' %}">Войти</a>
+                      <a class="nav-link" href="{% url 'crime:userlogin' %}" id="nav7">Войти</a>
                   </li>
               {% endif %}
           </ul>
