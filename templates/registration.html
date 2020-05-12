@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block body_block %}
+  <div class="container">
+      <div class="jumbotron jumbotron-fluid">
+          {% if registered %}
+          <h1>Thank you for registering!</h1>
+          {% else %}
+              {% if flag %}
+                  <script>
+                      $(document).ready(function(){
+                          $("#myModal").modal('show');});
+                  </script>
+                  <div id="myModal" class="modal fade">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h4 class="modal-title">Регистрационная форма неверна</h4>
+                              </div>
+                              <div class="modal-body">
+                                  {{ errors }}
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-primary" data-dismiss="modal">Закрыть</button>
+                              </div>
+                          </div><!-- /.модальное окно-Содержание -->
+                      </div><!-- /.модальное окно-диалог -->
+                  </div><!-- /.модальное окно -->
+              {% endif %}
+              <form enctype="multipart/form-data" method="POST">
+                  {% csrf_token %}
+                  <div class="form-group">
+                      {% for field in user_form %}
+                          <div class="row justify-content-center">
+                              <div class="col-sm-6 mb-4">
+                                  <input type="{{ field.html_name }}" name="{{ field.name }}" class="form-control form-control-lg" placeholder={{ field.label }} required>
+                              </div>
+                          </div>
+                      {% endfor %}
+                  </div>
+                  <div class="row justify-content-center">
+                      <input class="btn btn-primary" type="submit" value="Зарегистрироваться">
+                  </div>
+              </form>
+          {% endif %}
+      </div>
+  </div>
+{% endblock %}

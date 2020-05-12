@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Latest compiled and minified CSS -->
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+  </head>
+  <body>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.16/js/i18n/defaults-ru_RU.min.js"></script>
+
+  <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                  <a class="nav-link"  href="{% url 'index' %}">Главная</a>
+              </li>
+              {% if user.is_authenticated %}
+                  {% if user.is_staff %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'crime:update' %}">Обновить</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'crime:onecountry' %}">Анализ одной страны</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{% url 'crime:compare' %}">Сравнительный анализ стран</a>
+                      </li>
+                  {% endif %}
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'crime:logout' %}">Выйти</a>
+                  </li>
+              {% else %}
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'crime:register' %}">Регистрация</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'crime:userlogin' %}">Войти</a>
+                  </li>
+              {% endif %}
+          </ul>
+          {% if user.is_authenticated %}
+              <span class="navbar-text">User: {{ user.username }}</span>
+          {% endif %}
+      </div>
+  </nav>
+  <div class="container">
+      {% block body_block %}
+      {% endblock %}
+  </div>
+  </body>
+</html>

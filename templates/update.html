@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body_block %}
+    <div class="container" xmlns="http://www.w3.org/1999/html">
+      <div class="jumbotron jumbotron-fluid">
+      <form enctype="multipart/form-data" method="POST">
+          {% csrf_token %}
+          <div class="ml-3 mr-3">
+              <h5 class="display-7">Выберите те преступления, по которым надо обновить данные</h5>
+              <div class="mt-2 mb-5">
+              <select class="selectpicker form-control" data-live-search="true" multiple data-selected-text-format="count>4" multiple name="types">
+                  <option value="all">Все</option>
+                  {% for app in apps %}
+                      <option value={{ app.id }}>{{ app.rus_name|capfirst }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+          </div>
+          <div class="ml-3 mr-3">
+          <h5 class="display-7">Выберите те индикаторы, для которых надо обновить данные</h5>
+          <div class="mt-2 mb-5">
+              <select class="selectpicker form-control" data-live-search="true" multiple data-selected-text-format="count>2" multiple name="indicator">
+                  <option value="all">Все</option>
+                  {% for indic in indics %}
+                      <option value={{ indic.id }}>{{ indic.rus_name }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+          </div>
+          <div class="row justify-content-center">
+              <input class="btn btn-primary size=4" type="submit" value="Обновить">
+          </div>
+      </form>
+      </div>
+    </div>
+{% endblock %}
