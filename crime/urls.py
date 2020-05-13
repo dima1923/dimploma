@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from crime.views import UserRegistrationView, UserLogin, UserLogout,Update,OneCountry,CompareCountries,World
+from crime.views import UserRegistrationView, UserLogin, UserLogout,Update,OneCountry,CompareCountries,World,Map
 # SET THE NAMESPACE!
 app_name = 'crime'
 # Be careful setting the name to just /login use userlogin instead!
@@ -10,5 +10,6 @@ urlpatterns=[
     url(r'^update/$', Update.as_view(),name='update'),
     url(r'^onecountry/$',OneCountry.as_view(),name='onecountry'),
     url(r'^compare/$',CompareCountries.as_view(),name='compare'),
-    url(r'^world/$',World.as_view(), name='world')
+    url(r'^world/$',World.as_view(), name='world'),
+    url(r'^map/$',Map.as_view(), name='map')
 ]

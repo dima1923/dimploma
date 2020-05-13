@@ -8,6 +8,9 @@ import requests
 import json
 from crime.models import CrimeDoc, CountryNames, Crimes, CountryDoc, Indicator_Doc, Indicators,CrimeType
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+import pandas as pd
+import plotly.graph_objects as go
 
 class UserRegistrationView(View):
     form_class = UserForm
@@ -125,11 +128,11 @@ class World(LoginRequiredMixin,View):
         years = Crimes.objects.values('crime_doc_id','year').distinct().order_by('crime_doc_id','-year')
         return render(request, 'world.html', {'type_to_crimes': type_to_crimes, 'years': years})
 
-    def post(self,request):
-        crime_ids = request.POST.getlist('crime')
-        years=request.POST.getlist('year')
-        print(crime_ids, years)
-        return HttpResponseRedirect(reverse('index'))
+    # def post(self,request):
+    #     crime_ids = request.POST.getlist('crime')
+    #     years=request.POST.getlist('year')
+    #     print(crime_ids, years)
+    #     return HttpResponseRedirect(reverse('index'))
 
 
 class OneCountry(LoginRequiredMixin,View):
@@ -170,7 +173,31 @@ class CompareCountries(LoginRequiredMixin, View):
 
 
 class Map(View):
-
-    def get(self, request):
-        return render(request, 'fig.html')
-
+    def post(self,request):
+        id=request.POST.get('crime')
+        year = request.POST.get('year')
+        crime = CrimeDoc.objects.get(id=id).rus_name
+        table = list(Crimes.objects.filter(crime_doc_id=id, year=year, is_actual=True).values('country_doc_id__rus_name', 'country_doc_id', 'value'))
+        table = pd.DataFrame.from_records(table)
+        table = table.rename(columns={'country_doc_id__rus_name':'страна','value':crime.capitalize(),'country_doc_id':'iso'})
+        fig = go.Figure(data=go.Choropleth(
+            locations=table['iso'],
+            z=table[crime.capitalize()],
+            text=table['страна'],
+            colorscale='Greys',
+            autocolorscale=False,
+            reversescale=False,
+            marker_line_color='darkgray',
+            marker_line_width=1.5
+        ))
+        fig.update_layout(
+            title_text='Количество преступлений',
+            width=1200,
+            height=800,
+            geo=dict(
+                showframe=False,
+                showcoastlines=False,
+                projection_type='equirectangular'
+            ))
+        new_string=fig.to_html(full_html=False)
+        return JsonResponse({'new_string':new_string})

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block body_block %}
 <div class="container">
-  <div class="jumbotron jumbotron-fluid">
-            <form enctype="multipart/form-data" method="POST">
+  <div class="jumbotron jumbotron-fluid" id="main">
+            <form method="POST" id="post-form">
                 {% csrf_token %}
             <div class="row justify-content-center">
                 <select class="selectpicker form-control" data-width="65%" data-live-search="true" id="crime" name="crime" title="Преступление">
@@ -39,5 +39,26 @@
 </div>
     <script>
         $( 'nav.navbar #nav8' ).addClass('active')
+    </script>
+    <script type="text/javascript">
+    $(document).on('submit', '#post-form',function(e){
+        e.preventDefault();
+    $.ajax({
+        type:'POST',
+        url:'{% url "crime:map" %}',
+        data:{
+            crime:$('#crime').val(),
+            year:$('#year').val()
+        },
+        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+        success:function(json){
+            $("#map").remove();
+            $("#main").append('<div id="map">'+json.new_string+'</div>');
+        },
+        error : function(xhr,errmsg,err) {
+        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+    }
+    });
+});
     </script>
 {% endblock %}
