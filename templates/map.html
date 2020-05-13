@@ -1,0 +1,25 @@
+<div id="map">
+<div class="row justify-content-center">
+    {{ fig|safe }}
+    <div class="mt-5">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">№</th>
+            <th scope="col">Название страны</th>
+            <th scope="col">Количество преступлений</th>
+        </tr>
+        </thead>
+    <tbody>
+    {% for item in rating %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ item.country_doc_id__rus_name }}</td>
+            <td>{{ item.value }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+</div>
+</div>

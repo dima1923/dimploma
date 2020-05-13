@@ -22,7 +22,7 @@
             </div>
             <div class="mt-3">
                 <div class="row justify-content-center">
-                    <input class="btn btn-primary" type="submit" value="Построить карту и анализ">
+                    <input class="btn btn-secondary" type="submit" value="Построить карту и анализ">
                 </div>
             </div>
             </form>
@@ -53,7 +53,7 @@
         headers: {'X-CSRFToken': '{{ csrf_token }}'},
         success:function(json){
             $("#map").remove();
-            $("#main").append('<div id="map">'+json.new_string+'</div>');
+            $("#main").append(json.new_string);
         },
         error : function(xhr,errmsg,err) {
         console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console

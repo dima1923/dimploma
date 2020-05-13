@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 import pandas as pd
 import plotly.graph_objects as go
+from django.template.loader import render_to_string
 
 class UserRegistrationView(View):
     form_class = UserForm
@@ -177,8 +178,8 @@ class Map(View):
         id=request.POST.get('crime')
         year = request.POST.get('year')
         crime = CrimeDoc.objects.get(id=id).rus_name
-        table = list(Crimes.objects.filter(crime_doc_id=id, year=year, is_actual=True).values('country_doc_id__rus_name', 'country_doc_id', 'value'))
-        table = pd.DataFrame.from_records(table)
+        query = list(Crimes.objects.filter(crime_doc_id=id, year=year, is_actual=True).values('country_doc_id__rus_name', 'country_doc_id', 'value').order_by('-value'))
+        table = pd.DataFrame.from_records(query)
         table = table.rename(columns={'country_doc_id__rus_name':'страна','value':crime.capitalize(),'country_doc_id':'iso'})
         fig = go.Figure(data=go.Choropleth(
             locations=table['iso'],
@@ -199,5 +200,6 @@ class Map(View):
                 showcoastlines=False,
                 projection_type='equirectangular'
             ))
-        new_string=fig.to_html(full_html=False)
+        fig_html=fig.to_html(full_html=False)
+        new_string = render_to_string('map.html', {'fig':fig_html,'rating': query[0:10]})
         return JsonResponse({'new_string':new_string})
