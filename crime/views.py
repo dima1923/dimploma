@@ -12,6 +12,7 @@ from django.http import JsonResponse
 import pandas as pd
 import plotly.graph_objects as go
 from django.template.loader import render_to_string
+from crime.plot import *
 
 class UserRegistrationView(View):
     form_class = UserForm
@@ -202,4 +203,25 @@ class Map(View):
             ))
         fig_html=fig.to_html(full_html=False)
         new_string = render_to_string('map.html', {'fig':fig_html,'rating': query[0:10]})
+        return JsonResponse({'new_string':new_string})
+
+
+class OneCountryPlot(View):
+    def post(self, request):
+        crimes=request.POST.getlist('crime[]')
+        country=request.POST.get('country')
+        # fig = go.Figure()
+        # for crime in crimes:
+        #     crimes_data=Crimes.objects.filter(crime_doc_id=crime,country_doc_id=country,is_actual=True).order_by('year').values('value','year')
+        #     name=CrimeDoc.objects.get(id=crime).rus_name
+        #     df=pd.DataFrame.from_records(crimes_data)
+        #     max_value=df['value'].max()
+        #     df['value']=df['value']/max_value
+        #     fig.add_trace(go.Scatter(x=df['year'], y=df['value'],
+        #                              mode='lines+markers',
+        #                              name=name))
+        # fig.update_layout(width=1200,height=800)
+        # fig_html=fig.to_html(full_html=False)
+        fig_line,fig_bar = plotLineHistCountryCrimes(crimes=crimes,country=country)
+        new_string=render_to_string('countryplot.html',{'line': fig_line,'bar':fig_bar})
         return JsonResponse({'new_string':new_string})

@@ -20,7 +20,7 @@
                   {% endfor %}
                 </select>
             </div>
-            <div class="mt-3">
+            <div class="mt-3" id="but">
                 <div class="row justify-content-center">
                     <input class="btn btn-secondary" type="submit" value="Построить карту и анализ">
                 </div>
@@ -43,6 +43,11 @@
     <script type="text/javascript">
     $(document).on('submit', '#post-form',function(e){
         e.preventDefault();
+        $("#but").append("<div class=\"text-center mt-3\" id='spinner'>\n" +
+            "  <div class=\"spinner-border\" role=\"status\">\n" +
+            "    <span class=\"sr-only\">Loading...</span>\n" +
+            "  </div>\n" +
+            "</div>")
     $.ajax({
         type:'POST',
         url:'{% url "crime:map" %}',
@@ -53,6 +58,7 @@
         headers: {'X-CSRFToken': '{{ csrf_token }}'},
         success:function(json){
             $("#map").remove();
+            $("#spinner").remove()
             $("#main").append(json.new_string);
         },
         error : function(xhr,errmsg,err) {
