@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from crime.views import UserRegistrationView, UserLogin, UserLogout,Update,OneCountry,CompareCountries,World,Map,OneCountryPlot
+from crime.views import UserRegistrationView, UserLogin, UserLogout,Update,OneCountry,CompareCountries,World,Map,OneCountryPlot, ManyCountriesPlot
 # SET THE NAMESPACE!
 app_name = 'crime'
 # Be careful setting the name to just /login use userlogin instead!
@@ -12,5 +12,6 @@ urlpatterns=[
     url(r'^compare/$',CompareCountries.as_view(),name='compare'),
     url(r'^world/$',World.as_view(), name='world'),
     url(r'^map/$',Map.as_view(), name='map'),
-    url(r'cplot/$',OneCountryPlot.as_view(), name='cplot')
+    url(r'cplot/$',OneCountryPlot.as_view(), name='cplot'),
+    url(r'csplot/$',ManyCountriesPlot.as_view(), name='csplot')
 ]

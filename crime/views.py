@@ -9,8 +9,6 @@ import json
 from crime.models import CrimeDoc, CountryNames, Crimes, CountryDoc, Indicator_Doc, Indicators,CrimeType
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-import pandas as pd
-import plotly.graph_objects as go
 from django.template.loader import render_to_string
 from crime.plot import *
 
@@ -130,11 +128,6 @@ class World(LoginRequiredMixin,View):
         years = Crimes.objects.values('crime_doc_id','year').distinct().order_by('crime_doc_id','-year')
         return render(request, 'world.html', {'type_to_crimes': type_to_crimes, 'years': years})
 
-    # def post(self,request):
-    #     crime_ids = request.POST.getlist('crime')
-    #     years=request.POST.getlist('year')
-    #     print(crime_ids, years)
-    #     return HttpResponseRedirect(reverse('index'))
 
 
 class OneCountry(LoginRequiredMixin,View):
@@ -210,18 +203,15 @@ class OneCountryPlot(View):
     def post(self, request):
         crimes=request.POST.getlist('crime[]')
         country=request.POST.get('country')
-        # fig = go.Figure()
-        # for crime in crimes:
-        #     crimes_data=Crimes.objects.filter(crime_doc_id=crime,country_doc_id=country,is_actual=True).order_by('year').values('value','year')
-        #     name=CrimeDoc.objects.get(id=crime).rus_name
-        #     df=pd.DataFrame.from_records(crimes_data)
-        #     max_value=df['value'].max()
-        #     df['value']=df['value']/max_value
-        #     fig.add_trace(go.Scatter(x=df['year'], y=df['value'],
-        #                              mode='lines+markers',
-        #                              name=name))
-        # fig.update_layout(width=1200,height=800)
-        # fig_html=fig.to_html(full_html=False)
         fig_line,fig_bar = plotLineHistCountryCrimes(crimes=crimes,country=country)
         new_string=render_to_string('countryplot.html',{'line': fig_line,'bar':fig_bar})
+        return JsonResponse({'new_string':new_string})
+
+
+class ManyCountriesPlot(View):
+    def post(self, request):
+        crime = request.POST.get('crime')
+        countries = request.POST.getlist('country[]')
+        fig = plotHistCountriesCrime(crime=crime, countries=countries)
+        new_string = render_to_string('countriesplot.html',{'fig':fig})
         return JsonResponse({'new_string':new_string})
