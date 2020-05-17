@@ -128,46 +128,6 @@ class World(LoginRequiredMixin,View):
         years = Crimes.objects.values('crime_doc_id','year').distinct().order_by('crime_doc_id','-year')
         return render(request, 'world.html', {'type_to_crimes': type_to_crimes, 'years': years})
 
-
-
-class OneCountry(LoginRequiredMixin,View):
-    login_url = '/userlogin/'
-
-    def get(self, request):
-        countries = CountryDoc.objects.filter(crimes__crime_doc_id__isnull=False).values().distinct()
-        type_to_crimes = {}
-        types = CrimeType.objects.values('id', 'rus_name')
-        for type in types:
-            type_to_crimes[type['rus_name']] = CrimeDoc.objects.filter(type_id=type['id']).values('id','rus_name','crimes__country_doc_id').distinct()
-        return render(request,'onecountry.html',{'countries':countries,'type_to_crimes':type_to_crimes})
-
-    def post(self, request):
-        country_id = request.POST.get('country')
-        crime_ids = request.POST.getlist('crime')
-        print(country_id,crime_ids)
-        return HttpResponseRedirect(reverse('index'))
-
-
-
-class CompareCountries(LoginRequiredMixin, View):
-    login_url = '/userlogin/'
-
-    def get(self, request):
-        type_to_crimes = {}
-        types = CrimeType.objects.values('id', 'rus_name')
-        for type in types:
-            type_to_crimes[type['rus_name']] = CrimeDoc.objects.filter(type_id=type['id'])
-        countries = CountryDoc.objects.filter(crimes__crime_doc_id__isnull=False).values('id','rus_name','crimes__crime_doc_id').distinct()
-        return render(request,'compare.html',{'type_to_crimes':type_to_crimes,'countries':countries})
-
-    def post(self, request):
-        crime_id = request.POST.get('crime')
-        countries_id = request.POST.getlist('country')
-        print(crime_id,countries_id)
-        return HttpResponseRedirect(reverse('index'))
-
-
-class Map(View):
     def post(self,request):
         id=request.POST.get('crime')
         year = request.POST.get('year')
@@ -186,32 +146,66 @@ class Map(View):
             marker_line_width=1.5
         ))
         fig.update_layout(
-            title_text='Количество преступлений',
+            title_text=crime.capitalize(),
             width=1200,
             height=800,
             geo=dict(
-                showframe=False,
+                showframe=True,
                 showcoastlines=False,
                 projection_type='equirectangular'
-            ))
+            ),
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(size=18, color="#000000"),
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         fig_html=fig.to_html(full_html=False)
         new_string = render_to_string('map.html', {'fig':fig_html,'rating': query[0:10]})
         return JsonResponse({'new_string':new_string})
 
 
-class OneCountryPlot(View):
+
+class OneCountry(LoginRequiredMixin,View):
+    login_url = '/userlogin/'
+
+    def get(self, request):
+        countries = CountryDoc.objects.filter(crimes__crime_doc_id__isnull=False).values().distinct()
+        type_to_crimes = {}
+        types = CrimeType.objects.values('id', 'rus_name')
+        for type in types:
+            type_to_crimes[type['rus_name']] = CrimeDoc.objects.filter(type_id=type['id']).values('id','rus_name','crimes__country_doc_id').distinct()
+        return render(request,'onecountry.html',{'countries':countries,'type_to_crimes':type_to_crimes})
+
     def post(self, request):
-        crimes=request.POST.getlist('crime[]')
-        country=request.POST.get('country')
-        fig_line,fig_bar = plotLineHistCountryCrimes(crimes=crimes,country=country)
-        new_string=render_to_string('countryplot.html',{'line': fig_line,'bar':fig_bar})
-        return JsonResponse({'new_string':new_string})
+        crimes = request.POST.getlist('crime[]')
+        country = request.POST.get('country')
+        if crimes and country:
+            fig_line, fig_bar, fig_rate = plotLineHistCountryCrimes(crimes=crimes, country=country)
+            new_string = render_to_string('countryplot.html', {'line': fig_line, 'bar': fig_bar, 'rate':fig_rate})
+            return JsonResponse({'new_string': new_string})
+        else:
+            return JsonResponse({'new_string':''})
 
 
-class ManyCountriesPlot(View):
+
+class CompareCountries(LoginRequiredMixin, View):
+    login_url = '/userlogin/'
+
+    def get(self, request):
+        type_to_crimes = {}
+        types = CrimeType.objects.values('id', 'rus_name')
+        for type in types:
+            type_to_crimes[type['rus_name']] = CrimeDoc.objects.filter(type_id=type['id'])
+        countries = CountryDoc.objects.filter(crimes__crime_doc_id__isnull=False).values('id','rus_name','crimes__crime_doc_id').distinct()
+        return render(request,'compare.html',{'type_to_crimes':type_to_crimes,'countries':countries})
+
     def post(self, request):
         crime = request.POST.get('crime')
         countries = request.POST.getlist('country[]')
-        fig = plotHistCountriesCrime(crime=crime, countries=countries)
-        new_string = render_to_string('countriesplot.html',{'fig':fig})
-        return JsonResponse({'new_string':new_string})
+        if crime and countries:
+            fig, fig_rate = plotHistCountriesCrime(crime=crime, countries=countries)
+            new_string = render_to_string('countriesplot.html', {'fig': fig, 'fig_rate':fig_rate})
+            return JsonResponse({'new_string': new_string})
+        else:
+            print(1)
+            return JsonResponse({'new_string':''})
+
