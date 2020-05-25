@@ -159,7 +159,7 @@ class World(LoginRequiredMixin,View):
             paper_bgcolor='rgba(0,0,0,0)'
         )
         fig_html=fig.to_html(full_html=False)
-        new_string = render_to_string('map.html', {'fig':fig_html,'rating': query[0:10]})
+        new_string = render_to_string('map.html', {'fig':fig_html,'max_rating': query[0:5], 'min_rating': query[:-6:-1]})
         return JsonResponse({'new_string':new_string})
 
 
@@ -178,8 +178,11 @@ class OneCountry(LoginRequiredMixin,View):
     def post(self, request):
         crimes = request.POST.getlist('crime[]')
         country = request.POST.get('country')
+        method = request.POST.get('predict')
+        if method == 'auto':
+            method = None
         if crimes and country:
-            fig_line, fig_bar, fig_rate = plotLineHistCountryCrimes(crimes=crimes, country=country)
+            fig_line, fig_bar, fig_rate = plotLineHistCountryCrimes(crimes=crimes, country=country, method=method)
             new_string = render_to_string('countryplot.html', {'line': fig_line, 'bar': fig_bar, 'rate':fig_rate})
             return JsonResponse({'new_string': new_string})
         else:
@@ -201,11 +204,36 @@ class CompareCountries(LoginRequiredMixin, View):
     def post(self, request):
         crime = request.POST.get('crime')
         countries = request.POST.getlist('country[]')
+        method = request.POST.get('predict')
+        if method == 'auto':
+            method = None
         if crime and countries:
-            fig, fig_rate = plotHistCountriesCrime(crime=crime, countries=countries)
-            new_string = render_to_string('countriesplot.html', {'fig': fig, 'fig_rate':fig_rate})
+            fig_line,fig, fig_rate = plotHistCountriesCrime(crime=crime, countries=countries, method=method)
+            new_string = render_to_string('countriesplot.html', {'fig': fig, 'fig_rate':fig_rate, 'fig_line':fig_line})
             return JsonResponse({'new_string': new_string})
         else:
             print(1)
             return JsonResponse({'new_string':''})
+
+
+class Influence(LoginRequiredMixin, View):
+    login_url = '/userlogin/'
+
+    def get(self, request):
+        type_to_crimes = {}
+        types = CrimeType.objects.values('id', 'rus_name')
+        for type in types:
+            type_to_crimes[type['rus_name']] = CrimeDoc.objects.filter(type_id=type['id'])
+        years = Crimes.objects.values('crime_doc_id', 'year').distinct().order_by('crime_doc_id', '-year')
+        return render(request, 'influence.html', {'type_to_crimes': type_to_crimes, 'years': years})
+
+    def post(self, request):
+        crime = request.POST.get('crime')
+        year = request.POST.get('year')
+        deloutliers = request.POST.get('deloutliers')
+        importance = request.POST.get('importance')
+        featureper = request.POST.get('featureper')
+        objectper = request.POST.get('objectper')
+        print(crime,year,deloutliers,importance,featureper,objectper)
+        return JsonResponse({'new_string':""})
 

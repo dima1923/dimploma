@@ -19,6 +19,14 @@
                 </optgroup>
                 {% endfor %}
                 </select>
+                <select class="selectpicker form-control ml-2 mr-2" data-width="30%" data-live-search="true" id="predict" name="predict" title="Метод прогнозирования">
+                    <option value="auto">Автоподбор тренда</option>
+                    <option value="lin">Линейный тренд</option>
+                    <option value="p2">Тренд - полином второй степени</option>
+                    <option value="p3">Тренд - полином третьей степени</option>
+                    <option value="ln">Логарифмический тренд</option>
+                    <option value="exp">Экспоненциальный тренд</option>
+                </select>
                 <script>
                     var $select1 = $( '#country' ),
                         $select2 = $( '#crime' ),
@@ -56,7 +64,8 @@
         url:'{% url "crime:onecountry" %}',
         data:{
             country:$('#country').val(),
-            crime:$('#crime').val()
+            crime:$('#crime').val(),
+            predict:$('#predict').val()
         },
         headers: {'X-CSRFToken': '{{ csrf_token }}'},
         success:function(json){

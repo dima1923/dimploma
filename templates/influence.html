@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block body_block %}
+    <div class="container-fluid">
+        <div class="jumbotron jumbotron-fluid" id="main">
+            <form method="POST" id="post-form">
+                {% csrf_token %}
+                <div class="row justify-content-center">
+                    <select class="selectpicker form-control ml-2 mr-2" data-width="40%" data-live-search="true" id="crime" name="crime" title="Преступление" required>
+                        {% for type,crimes in type_to_crimes.items %}
+                            <optgroup label="{{ type }}">
+                                {% for crime in crimes %}
+                                    <option value={{ crime.id }}>{{ crime.rus_name|capfirst }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                    <select class="selectpicker form-control ml-2 mr-2" data-live-search="true" data-width="8%" id="year" title="Год" required>
+                        {% for year in years %}
+                            <option parent={{ year.crime_doc_id }} value="{{ year.year }}">{{ year.year }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="selectpicker form-control ml-2 mr-2" data-live-search="true" data-width="20%" id="deloutliers" title="Метод удаления аномалий">
+                        <option value="Local">Локал</option>
+                        <option value="IsolationForest">Изолирующий лес</option>
+                        <option value="Elliptic">Эллиптический</option>
+                    </select>
+                    <select class="selectpicker form-control ml-2 mr-2" data-live-search="true" data-width="20%" id="importance" title="Метод оценивания влияния">
+                        <option value="RandomForest">Случайный лес</option>
+                        <option value="Linear">Линейная регрессия</option>
+                        <option value="Correlation">Корреляция</option>
+                    </select>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="form-group ml-2 mr-2 mt-2">
+                        <label for="featureper">Заполненность признака</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">%</span>
+                            </div>
+                        <input type="number" class="form-control" min="0" max="100" id="featureper" value="50">
+                        </div>
+                    </div>
+                    <div class="form-group ml-2 mr-2 mt-2">
+                        <label for="featureper">Заполненность объекта</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon2">%</span>
+                            </div>
+                        <input type="number" class="form-control" min="0" max="100" id="objectper" value="50">
+                        </div>
+                    </div>
+                </div>
+            <div class="mt-3" id="but">
+                <div class="row justify-content-center">
+                    <button  class="btn btn-secondary" type="submit">Анализ</button>
+                </div>
+            </div>
+            </form>
+            <script>
+                var $select1 = $( '#crime' ),
+                    $select2 = $( '#year' ),
+                    $options = $select2.find( 'option' );
+                $select1.on( 'change', function() {
+                    $select2.html( $options.filter( '[parent="' + this.value + '"]' ) );
+                    $select2.selectpicker('refresh')
+                } ).trigger( 'change' );
+            </script>
+        </div>
+    </div>
+    <script>
+        $( 'nav.navbar #nav9' ).addClass('active')
+    </script>
+    <script>
+        bootstrapValidate( ['#featureper','#objectper'], 'regex:^[0-9]{1,2}$:Введено неправильное число')
+    </script>
+    <script type="text/javascript">
+    $(document).on('submit', '#post-form',function(e){
+        e.preventDefault();
+        $("#but").append("<div class=\"text-center mt-3\" id='spinner'>\n" +
+            "  <div class=\"spinner-border\" role=\"status\">\n" +
+            "    <span class=\"sr-only\">Loading...</span>\n" +
+            "  </div>\n" +
+            "</div>")
+    $.ajax({
+        type:'POST',
+        url:'{% url "crime:compare" %}',
+        data:{
+            year:$('#year').val(),
+            crime:$('#crime').val(),
+            deloutliers:$('#deloutliers').val(),
+            importance:$('#importance').val(),
+            featureper:$('#featureper').val(),
+            objectper:$('#objectper').val()
+        },
+        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+        success:function(json){
+            $("#but .btn").text("Перестроить ").append("<i class=\"fas fa-chart-bar\"></i>")
+            $("#influence").remove();
+            $("#spinner").remove()
+            $("#main").append(json.new_string);
+        },
+        error : function(xhr,errmsg,err) {
+        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+    }
+    });
+});
+    </script>
+{% endblock %}

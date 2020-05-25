@@ -1,29 +1,51 @@
 <div id="map" class="mt-3">
     <div class="row justify-content-center">
         {{ fig|safe }}
-    <div class="mt-5">
-    <div class="mt-5">
-        <div class="ml-3 mt-5">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th scope="col">№</th>
-                    <th scope="col">Название страны</th>
-                    <th scope="col">Количество преступлений</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for item in rating %}
-                    <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ item.country_doc_id__rus_name }}</td>
-                        <td>{{ item.value }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
     </div>
-    </div>
+    <div class="mt-2">
+            <div class="row justify-content-center">
+                <div class="mr-5">
+                    <h2>Максимальное количество(топ-5)</h2>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">№</th>
+                            <th scope="col">Название страны</th>
+                            <th scope="col">Количество преступлений</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in max_rating %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ item.country_doc_id__rus_name }}</td>
+                                <td>{{ item.value }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ml-5">
+                    <h2>Минимальное количество(топ-5)</h2>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">№</th>
+                            <th scope="col">Название страны</th>
+                            <th scope="col">Количество преступлений</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in min_rating %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ item.country_doc_id__rus_name }}</td>
+                                <td>{{ item.value }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
     </div>
 </div>
