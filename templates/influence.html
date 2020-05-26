@@ -70,9 +70,6 @@
     <script>
         $( 'nav.navbar #nav9' ).addClass('active')
     </script>
-    <script>
-        bootstrapValidate( ['#featureper','#objectper'], 'regex:^[0-9]{1,2}$:Введено неправильное число')
-    </script>
     <script type="text/javascript">
     $(document).on('submit', '#post-form',function(e){
         e.preventDefault();
@@ -83,7 +80,7 @@
             "</div>")
     $.ajax({
         type:'POST',
-        url:'{% url "crime:compare" %}',
+        url:'{% url "crime:influence" %}',
         data:{
             year:$('#year').val(),
             crime:$('#crime').val(),

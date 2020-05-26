@@ -234,6 +234,7 @@ class Influence(LoginRequiredMixin, View):
         importance = request.POST.get('importance')
         featureper = request.POST.get('featureper')
         objectper = request.POST.get('objectper')
-        print(crime,year,deloutliers,importance,featureper,objectper)
-        return JsonResponse({'new_string':""})
+        fig, df = plotImportance(crime,year,deloutliers,importance,featureper,objectper)
+        new_string = render_to_string('socind.html', {'fig':fig, 'data':df.to_dict(orient='records')})
+        return JsonResponse({'new_string':new_string})
 

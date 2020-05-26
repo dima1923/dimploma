@@ -5,7 +5,7 @@
         <form method="POST" id="post-form">
             {% csrf_token %}
             <div class="row justify-content-center">
-                <select class="selectpicker form-control ml-2 mr-2" data-width="30%" data-live-search="true" id="crime" name="crime" title="Преступление">
+                <select class="selectpicker form-control ml-2 mr-2" data-width="30%" data-live-search="true" id="crime" name="crime" title="Преступление" required>
                 {% for type,crimes in type_to_crimes.items %}
                 <optgroup label="{{ type }}">
                   {% for crime in crimes %}
@@ -14,7 +14,7 @@
                 </optgroup>
                 {% endfor %}
                 </select>
-                <select class="selectpicker form-control ml-2 mr-2" data-width="30%" data-live-search="true" data-selected-text-format="count>2" id="country" multiple name="country" title="Страны">
+                <select class="selectpicker form-control ml-2 mr-2" data-width="30%" data-live-search="true" data-selected-text-format="count>2" id="country" multiple name="country" title="Страны" required>
                     {% for country in countries %}
                         <option parent="{{ country.crimes__crime_doc_id}}" value="{{ country.id }}">{{ country.rus_name }}</option>
                     {% endfor %}

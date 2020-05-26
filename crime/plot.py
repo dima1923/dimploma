@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.graph_objects as go
-from crime.models import Crimes,CrimeDoc, CountryDoc
+from crime.models import Crimes,CrimeDoc, CountryDoc, Indicators
 from django.db.models.expressions import Window
 from django.db.models.functions import Rank
 from django.db.models import F
@@ -67,9 +67,11 @@ def plotLineHistCountryCrimes(crimes,country, method):
             'year').values('value', 'year')
         name = CrimeDoc.objects.get(id=crime).rus_name
         df = pd.DataFrame.from_records(crimes_data)
-        request_pred = requests.post('http://127.0.0.1:5000/predict', json=json.dumps({'series_year': df.to_dict(orient='records'),'method':method}))
-        df_pred = json.loads(request_pred.text)
-        df_pred = pd.DataFrame.from_records(df_pred)
+        if df.shape[0]>3:
+            request_pred = requests.post('http://127.0.0.1:5000/predict', json=json.dumps(
+                {'series_year': df.to_dict(orient='records'), 'method': method}))
+            df_pred = json.loads(request_pred.text)
+            df_pred = pd.DataFrame.from_records(df_pred)
         df = addNan(df, 'value')
         max_value = df['value'].max()
         df['line_value'] = df['value'] / max_value
@@ -77,20 +79,25 @@ def plotLineHistCountryCrimes(crimes,country, method):
         fig_line.add_trace(go.Scatter(x=df['year'], y=df['line_value'],
                                  mode='lines+markers', name=name.capitalize(), legendgroup=name,
                                       marker={'color':color}, line={'color':color}))
-        fig_line.add_trace(go.Scatter(x=df_pred['year'],y=df_pred['value']/max_value,
-                                      mode='lines+markers', name=name.capitalize(),
-                                      marker={'symbol':"circle-open-dot", 'color':color},
-                                      line={'dash':'dot', 'color':color},
-                                      showlegend=False, legendgroup=name))
-        last_row=df.iloc[-1]
-        first_row=df_pred.iloc[0]
-        fig_line.add_trace(go.Scatter(x=[last_row.year,first_row.year],y=[last_row.value/max_value,first_row.value/max_value],
-                                      mode='lines',legendgroup=name, line={'color':color, 'dash':'dot'},name=name.capitalize(),
-                                      showlegend=False))
+        if df.shape[0]>3:
+            fig_line.add_trace(go.Scatter(x=df_pred['year'], y=df_pred['value'] / max_value,
+                                          mode='lines+markers', name=name.capitalize(),
+                                          marker={'symbol': "circle-open-dot", 'color': color},
+                                          line={'dash': 'dot', 'color': color},
+                                          showlegend=False, legendgroup=name))
+            last_row = df.iloc[-1]
+            first_row = df_pred.iloc[0]
+            fig_line.add_trace(go.Scatter(x=[last_row.year, first_row.year],
+                                          y=[last_row.value / max_value, first_row.value / max_value],
+                                          mode='lines', legendgroup=name, line={'color': color, 'dash': 'dot'},
+                                          name=name.capitalize(),
+                                          showlegend=False))
 
         fig_bar.add_trace(go.Bar(x=df['year'],y=df['value'], name=name.capitalize(), legendgroup=name, marker_color=color))
-        fig_bar.add_trace(go.Bar(x=df_pred['year'], y=df_pred['value'], name=name.capitalize(),
-                                 showlegend=False, legendgroup=name,marker_color=color, opacity=0.5, marker_line_width=1.5))
+        if df.shape[0]>3:
+            fig_bar.add_trace(go.Bar(x=df_pred['year'], y=df_pred['value'], name=name.capitalize(),
+                                     showlegend=False, legendgroup=name, marker_color=color, opacity=0.5,
+                                     marker_line_width=1.5))
 
         rate_data =Crimes.objects.filter(crime_doc_id=crime,is_actual=True).annotate(rank=Window(expression=Rank(), partition_by=F('year'), order_by=F('value').desc())).order_by('year','rank').values('country_doc_id','year','rank')
         rate_df=pd.DataFrame.from_records(rate_data)
@@ -171,3 +178,21 @@ def plotHistCountriesCrime(crime, countries, method):
     return fig_line.to_html(full_html=False, config={"displaylogo":False}), fig.to_html(full_html=False, config={"displaylogo":False}), fig_rate.to_html(full_html=False, config={"displaylogo":False})
 
 
+def plotImportance(crime, year, deloutliers, importance, featureper, objectper):
+    crime_data = list(Crimes.objects.filter(crime_doc_id=crime,year=year, is_actual=True).values('value','country_doc_id'))
+    indicators_data = list(Indicators.objects.filter(year=year,is_actual=True).values('value', 'country_doc_id', 'indicator_doc_id__rus_name'))
+    influenceResponse = requests.post('http://127.0.0.1:5000/influence',json=json.dumps({'crime_data': crime_data,
+                                                                              'indicators_data': indicators_data,
+                                                                              'deloutliers': deloutliers,
+                                                                              'importance': importance,
+                                                                              'featureper': featureper,
+                                                                              'objectper': objectper}))
+    influence_data = json.loads(influenceResponse.text)
+    print(influence_data)
+    df = pd.DataFrame.from_records(influence_data).sort_values(by='value',ascending=False)
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=df['name'], y=df['value']))
+    crime_name = CrimeDoc.objects.get(id=crime).rus_name
+    fig.update_layout(title_text=crime_name.capitalize(),width=1200, height=800, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(size=18,color="#000000"))
+    return fig.to_html(full_html=False, config={"displaylogo":False}), df
