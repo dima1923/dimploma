@@ -212,7 +212,6 @@ class CompareCountries(LoginRequiredMixin, View):
             new_string = render_to_string('countriesplot.html', {'fig': fig, 'fig_rate':fig_rate, 'fig_line':fig_line})
             return JsonResponse({'new_string': new_string})
         else:
-            print(1)
             return JsonResponse({'new_string':''})
 
 
@@ -237,4 +236,27 @@ class Influence(LoginRequiredMixin, View):
         fig, df = plotImportance(crime,year,deloutliers,importance,featureper,objectper)
         new_string = render_to_string('socind.html', {'fig':fig, 'data':df.to_dict(orient='records')})
         return JsonResponse({'new_string':new_string})
+
+
+def avg_nulls(df):
+    X = df.drop(['target'], axis=1)
+    missing_columns = X.isnull().sum().mean() * 100 / X.shape[0]
+    return missing_columns
+
+class Qwe(View):
+    def post(self,request):
+        crime = request.POST.get('crime')
+        year = request.POST.get('year')
+        crime_data = list(Crimes.objects.filter(crime_doc_id=crime,year=year, is_actual=True).values('value','country_doc_id'))
+        crime_df = pd.DataFrame.from_records(crime_data).rename(columns={'value': 'target'})
+        indicators_data=list(Indicators.objects.filter(year=year, is_actual=True).values('value', 'country_doc_id',
+                                                                         'indicator_doc_id__rus_name'))
+        indicators_df = pd.DataFrame.from_records(indicators_data).pivot(index='country_doc_id',
+                                                                             columns='indicator_doc_id__rus_name',
+                                                                             values='value')
+        df = indicators_df.merge(crime_df, on='country_doc_id').drop(columns=['country_doc_id'])
+        missing = int(avg_nulls(df))
+        print(missing)
+        return JsonResponse({'missing':missing})
+
 

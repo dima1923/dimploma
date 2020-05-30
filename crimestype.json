@@ -2,7 +2,7 @@
   {
     "id":1,
     "eng_name":"Acts involving fraud, deception or corruption",
-    "rus_name":"Деяния, связанные с мошенничеством, обманом или коррупцией "
+    "rus_name":"Деяния, связанные с мошенничеством, обманом или коррупцией"
   }
 ,
   {
@@ -20,24 +20,24 @@
   {
     "id": 4,
     "eng_name":"Acts causing harm or intending to cause harm to the person",
-    "rus_name":"Деяния, причиняющие вред или направленные на причинение вреда лицу"
+    "rus_name":"Деяния, подрывающие общественную безопасность"
   }
 ,
   {
     "id": 5,
     "eng_name":"Acts against property involving violence or threat against a person",
-    "rus_name":"Деяния, направленные против имущества, с применением насилия или угрозы в отношении лица"
+    "rus_name":"Деяния, направленные против собственности и совершаемые с применением насилия в отношении человека"
   }
 ,
   {
     "id": 6,
     "eng_name":"Injurious acts of a sexual nature",
-    "rus_name":"Вредоносные деяния сексуального характера"
+    "rus_name":"Деяния сексуального характера, причиняющие вред человеку"
   }
 ,
   {
     "id": 7,
     "eng_name":"Acts against public order, authority and provisions of the State ",
-    "rus_name":"Деяния, направленные против общественного порядка, органов власти и устоев государства"
+    "rus_name":"Деяния, направленные против общественного порядка, власти, а также основ государства"
   }
 ]

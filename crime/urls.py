@@ -11,5 +11,6 @@ urlpatterns=[
     url(r'^onecountry/$',OneCountry.as_view(),name='onecountry'),
     url(r'^compare/$',CompareCountries.as_view(),name='compare'),
     url(r'^world/$',World.as_view(), name='world'),
-    url(r'^influnce/$', Influence.as_view(), name='influence')
+    url(r'^influnce/$', Influence.as_view(), name='influence'),
+    url(r'^qwe/$',Qwe.as_view(),name='qwe')
 ]
