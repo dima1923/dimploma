@@ -11,6 +11,7 @@
                         <tr>
                             <th scope="col">№</th>
                             <th scope="col">Название страны</th>
+                            <th scope="col">Уровень преступности</th>
                             <th scope="col">Количество преступлений</th>
                         </tr>
                         </thead>
@@ -19,6 +20,7 @@
                             <tr>
                                 <th scope="row">{{ forloop.counter }}</th>
                                 <td>{{ item.country_doc_id__rus_name }}</td>
+                                <td>{{ item.rate }}</td>
                                 <td>{{ item.value }}</td>
                             </tr>
                         {% endfor %}
@@ -32,6 +34,7 @@
                         <tr>
                             <th scope="col">№</th>
                             <th scope="col">Название страны</th>
+                            <th scope="col">Уровень преступности</th>
                             <th scope="col">Количество преступлений</th>
                         </tr>
                         </thead>
@@ -40,6 +43,7 @@
                             <tr>
                                 <th scope="row">{{ forloop.counter }}</th>
                                 <td>{{ item.country_doc_id__rus_name }}</td>
+                                <td>{{ item.rate }}</td>
                                 <td>{{ item.value }}</td>
                             </tr>
                         {% endfor %}

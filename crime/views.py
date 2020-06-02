@@ -93,7 +93,7 @@ class Update(View):
                     crime_doc_id = CrimeDoc.objects.only('id').get(id=item['type'])
                     country_doc_id = CountryDoc.objects.only('id').get(id=item['iso'])
                     crime = Crimes(crime_doc_id=crime_doc_id, country_doc_id = country_doc_id,
-                                   value=int(float(item['value'])), year=item['year'])
+                                   value=int(float(item['value'])), year=item['year'], rate=float(item['rate']))
                     crime.save()
         indicators_id = request.POST.getlist('indicator')
         if 'all' in indicators_id:
@@ -132,14 +132,15 @@ class World(LoginRequiredMixin,View):
         id=request.POST.get('crime')
         year = request.POST.get('year')
         crime = CrimeDoc.objects.get(id=id).rus_name
-        query = list(Crimes.objects.filter(crime_doc_id=id, year=year, is_actual=True).values('country_doc_id__rus_name', 'country_doc_id', 'value').order_by('-value'))
+        query = list(Crimes.objects.filter(crime_doc_id=id, year=year, is_actual=True).values('country_doc_id__rus_name', 'country_doc_id', 'rate', 'value').order_by('-rate'))
         table = pd.DataFrame.from_records(query)
-        table = table.rename(columns={'country_doc_id__rus_name':'страна','value':crime.capitalize(),'country_doc_id':'iso'})
+        table = table.rename(columns={'country_doc_id__rus_name':'страна','rate':crime.capitalize(),'country_doc_id':'iso'})
         fig = go.Figure(data=go.Choropleth(
             locations=table['iso'],
             z=table[crime.capitalize()],
-            text=table['страна'],
+            text=table['страна']+'<br>Количество преступлений: '+table['value'].astype(str)+'</br>',
             colorscale='Greys',
+            colorbar_title="Уровень<br>преступности</br>",
             autocolorscale=False,
             reversescale=False,
             marker_line_color='darkgray',

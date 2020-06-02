@@ -32,6 +32,7 @@ class Crimes(models.Model):
     crime_doc_id = models.ForeignKey('CrimeDoc',unique=False, on_delete=models.CASCADE)
     country_doc_id = models.ForeignKey('CountryDoc', unique=False, on_delete=models.CASCADE)
     value = models.IntegerField()
+    rate = models.FloatField(default=0)
     year = models.IntegerField()
     is_actual = models.BooleanField(default=True)
 
