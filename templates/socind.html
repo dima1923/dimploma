@@ -16,7 +16,7 @@
                             <tr>
                                 <th scope="row">{{ forloop.counter }}</th>
                                 <td>{{ item.name }}</td>
-                                <td>{{ item.value }}</td>
+                                <td>{{ item.value|floatformat:7 }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

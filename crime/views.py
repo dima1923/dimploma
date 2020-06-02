@@ -139,7 +139,7 @@ class World(LoginRequiredMixin,View):
             locations=table['iso'],
             z=table[crime.capitalize()],
             text=table['страна']+'<br>Количество преступлений: '+table['value'].astype(str)+'</br>',
-            colorscale='Greys',
+            colorscale='Darkmint',
             colorbar_title="Уровень<br>преступности</br>",
             autocolorscale=False,
             reversescale=False,
@@ -256,8 +256,7 @@ class Qwe(View):
                                                                              columns='indicator_doc_id__rus_name',
                                                                              values='value')
         df = indicators_df.merge(crime_df, on='country_doc_id').drop(columns=['country_doc_id'])
-        missing = int(avg_nulls(df))
-        print(missing)
+        missing = int(100-avg_nulls(df))
         return JsonResponse({'missing':missing})
 
 
