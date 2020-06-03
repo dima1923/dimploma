@@ -249,6 +249,7 @@ class Qwe(View):
         crime = request.POST.get('crime')
         year = request.POST.get('year')
         crime_data = list(Crimes.objects.filter(crime_doc_id=crime,year=year, is_actual=True).values('value','country_doc_id'))
+        print(crime_data)
         crime_df = pd.DataFrame.from_records(crime_data).rename(columns={'value': 'target'})
         indicators_data=list(Indicators.objects.filter(year=year, is_actual=True).values('value', 'country_doc_id',
                                                                          'indicator_doc_id__rus_name'))

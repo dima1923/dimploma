@@ -165,13 +165,13 @@ def plotHistCountriesCrime(crime, countries, method):
             df_pred_num = pd.DataFrame.from_records(df_pred_num)
 
         fig_line.add_trace(go.Scatter(x=df['year'], y=df['rate'],
-                                      mode='lines+markers', name=name.capitalize(), legendgroup=name,
+                                      mode='lines+markers', name=name.title(), legendgroup=name,
                                       marker={'color': color}, line={'color': color},
                                       text="Количество преступлений: "+df['value'].astype(str)+
                                       "<br>Уровень преступности: "+df['rate'].astype(str)+"</br>Год: "+df['year'].astype(str)))
         if df.shape[0]>3:
             fig_line.add_trace(go.Scatter(x=df_pred['year'], y=df_pred['value'],
-                                      mode='lines+markers', name=name.capitalize(),
+                                      mode='lines+markers', name=name.title(),
                                       marker={'symbol': "circle-open-dot", 'color': color},
                                       line={'dash': 'dot', 'color': color},
                                       showlegend=False, legendgroup=name,
@@ -182,14 +182,14 @@ def plotHistCountriesCrime(crime, countries, method):
             last_row = df.iloc[-1]
             first_row = df_pred.iloc[0]
             fig_line.add_trace(go.Scatter(x=[last_row.year, first_row.year], y=[last_row.rate, first_row.value],
-                       mode='lines', legendgroup=name, line={'color': color, 'dash': 'dot'}, name=name.capitalize(),
+                       mode='lines', legendgroup=name, line={'color': color, 'dash': 'dot'}, name=name.title(),
                        showlegend=False))
 
-        fig.add_trace(go.Bar(x=df['year'], y=df['rate'], name=name, legendgroup=name, marker_color=color,
+        fig.add_trace(go.Bar(x=df['year'], y=df['rate'], name=name.title(), legendgroup=name, marker_color=color,
                              text="Количество преступлений: "+df['value'].astype(str)+
                              "<br>Уровень преступности: "+df['rate'].astype(str)+"</br>Год: "+df['year'].astype(str)))
         if df.shape[0] > 3:
-            fig.add_trace(go.Bar(x=df_pred['year'], y=df_pred['value'], name=name.capitalize(),
+            fig.add_trace(go.Bar(x=df_pred['year'], y=df_pred['value'], name=name.title(),
                                  showlegend=False, legendgroup=name, marker_color=color, opacity=0.5,
                                  marker_line_width=1.5,
                                  text="Прогнозируемый уровень преступности: "+df_pred['value'].astype(str)
@@ -199,17 +199,17 @@ def plotHistCountriesCrime(crime, countries, method):
         df_rate=data_rating_df[data_rating_df['country_doc_id_id']==country][['year','rank']]
         df_rate =addNan(df_rate,'rank')
         fig_rate.add_trace(go.Scatter(x=df_rate['year'], y=df_rate['rank'],
-                                      mode='lines+markers', name=name.capitalize(),
+                                      mode='lines+markers', name=name.title(),
                                       marker={'color': color},
                                       line={'color': color},
                                       text="Позиция: "+df_rate['rank'].astype(str)))
 
     fig.update_layout(width=1200, height=800, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                      xaxis_title="Год", yaxis_title="Количество", font=dict(size=18,color="#000000")
+                      xaxis_title="Год", yaxis_title="Уровень преступности", font=dict(size=18,color="#000000")
                       )
 
     fig_line.update_layout(title_text=crime_name.capitalize(),width=1300, height=900, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                           font=dict(size=18, color="#000000"), xaxis_title="Год", yaxis_title="Количество")
+                           font=dict(size=18, color="#000000"), xaxis_title="Год", yaxis_title="Уровень преступности")
 
     fig_rate.update_layout(width=1200, height=800, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                            xaxis_title="Год", yaxis_title="Позиция", font=dict(size=18, color="#000000"), xaxis=dict(dtick=1)
