@@ -100,7 +100,7 @@
         },
         headers: {'X-CSRFToken': '{{ csrf_token }}'},
         success:function(json){
-            $("#but .btn").text("Перестроить ").append("<i class=\"fas fa-chart-bar\"></i>")
+            $("#but .btn").text("Анализ")
             $("#influence").remove();
             $("#spinner").remove()
             $("#main").append(json.new_string);

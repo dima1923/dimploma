@@ -7,41 +7,43 @@ from django.db.models import F
 import requests
 import json
 import random
-COLORS = """aqua, aquamarine, azure,
-            beige, bisque, black, blanchedalmond, blue,
-            blueviolet, brown, burlywood, cadetblue,
-            chartreuse, chocolate, coral, cornflowerblue,
-            cornsilk, crimson, cyan, darkblue, darkcyan,
+# COLORS = """aquamarine, azure,
+#             beige, bisque, black, blanchedalmond, blue,
+#             blueviolet, brown, burlywood, cadetblue,
+#             chartreuse, chocolate, coral, cornflowerblue,
+#             cornsilk, crimson, cyan, darkblue, darkcyan,
+#             darkgoldenrod, darkgray, darkgrey, darkgreen,
+#             darkkhaki, darkmagenta, darkolivegreen, darkorange,
+#             darkorchid, darkred, darksalmon, darkseagreen,
+#             darkslateblue, darkslategray, darkslategrey,
+#             darkturquoise, darkviolet, deeppink, deepskyblue,
+#             dimgray, dimgrey, dodgerblue, firebrick,
+#             forestgreen, fuchsia, gainsboro,
+#             gold, goldenrod,  green,
+#             greenyellow, honeydew, hotpink, indianred, indigo,
+#             ivory, khaki, lavenderblush, lawngreen,
+#             lemonchiffon, lime, limegreen,
+#             magenta, maroon, mediumaquamarine,
+#             mediumblue, mediumorchid, mediumpurple,
+#             mediumseagreen, mediumslateblue, mediumspringgreen,
+#             mediumturquoise, mediumvioletred, midnightblue,
+#             mintcream, mistyrose, moccasin, navy,
+#             oldlace, olive, olivedrab, orange, orangered,
+#             orchid, palegoldenrod, palegreen, paleturquoise,
+#             palevioletred, papayawhip, peachpuff, peru, pink,
+#             plum, powderblue, purple, red, rosybrown,
+#             royalblue, rebeccapurple, saddlebrown, salmon,
+#             sandybrown, seagreen, seashell, sienna, silver,
+#             skyblue, slateblue, slategray, slategrey,
+#             springgreen, steelblue, tan, teal, thistle, tomato,
+#             turquoise, violet, wheat,
+#             yellowgreen""".split(',')
+COLORS = """darkblue, darkcyan,
             darkgoldenrod, darkgray, darkgrey, darkgreen,
             darkkhaki, darkmagenta, darkolivegreen, darkorange,
             darkorchid, darkred, darksalmon, darkseagreen,
             darkslateblue, darkslategray, darkslategrey,
-            darkturquoise, darkviolet, deeppink, deepskyblue,
-            dimgray, dimgrey, dodgerblue, firebrick,
-            forestgreen, fuchsia, gainsboro,
-            gold, goldenrod,  green,
-            greenyellow, honeydew, hotpink, indianred, indigo,
-            ivory, khaki, lavenderblush, lawngreen,
-            lemonchiffon, lightblue, lightcoral, lightcyan,
-            lightgoldenrodyellow, lightgray, lightgrey,
-            lightgreen, lightpink, lightsalmon, lightseagreen,
-            lightskyblue, lightslategray, lightslategrey,
-            lightsteelblue, lightyellow, lime, limegreen,
-            magenta, maroon, mediumaquamarine,
-            mediumblue, mediumorchid, mediumpurple,
-            mediumseagreen, mediumslateblue, mediumspringgreen,
-            mediumturquoise, mediumvioletred, midnightblue,
-            mintcream, mistyrose, moccasin, navy,
-            oldlace, olive, olivedrab, orange, orangered,
-            orchid, palegoldenrod, palegreen, paleturquoise,
-            palevioletred, papayawhip, peachpuff, peru, pink,
-            plum, powderblue, purple, red, rosybrown,
-            royalblue, rebeccapurple, saddlebrown, salmon,
-            sandybrown, seagreen, seashell, sienna, silver,
-            skyblue, slateblue, slategray, slategrey,
-            springgreen, steelblue, tan, teal, thistle, tomato,
-            turquoise, violet, wheat,
-            yellow, yellowgreen""".split(',')
+            darkturquoise, darkviolet, deeppink, deepskyblue""".split(',')
 
 
 def addNan(df, column):
@@ -233,5 +235,10 @@ def plotImportance(crime, year, deloutliers, importance, featureper, objectper):
     fig.add_trace(go.Bar(x=df['name'], y=df['value'], marker={'color':df['value'].abs(),'colorscale':'Darkmint'}))
     crime_name = CrimeDoc.objects.get(id=crime).rus_name
     fig.update_layout(title_text=crime_name.capitalize(),width=1200, height=800, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(size=18,color="#000000"))
+                    font=dict(size=18,color="#000000"), showlegend=False,
+                      xaxis=dict(
+                          ticks='',
+                          showticklabels=False
+                      )
+                      )
     return fig.to_html(full_html=False, config={"displaylogo":False}), df
